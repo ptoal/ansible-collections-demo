@@ -1,0 +1,38 @@
+- name: "Test Netbox modules"
+  connection: local
+  hosts: localhost
+  gather_facts: False
+  collections:
+    - netbox_community.ansible_modules
+
+  tasks:
+    - name: Test Site Exists
+      netbox_site:
+        netbox_url: http://netbox.mgmt.toal.ca
+        netbox_token: "{{ lookup('env','NETBOX_TOKEN')}}"
+        data:
+          name: Test Site
+          status: Active
+          state: present
+
+    - name: Test Device Type Exists
+      netbox_community.ansible_modules.netbox_device_type:
+        netbox_url: http://netbox.mgmt.toal.ca
+        netbox_token: "{{ lookup('env','NETBOX_TOKEN')}}"
+        data:
+          manufacturer: Cisco
+          model: Cisco Test
+          slug: cisco-test
+          state: present
+
+    - name: Create device within Netbox with only required information
+      netbox_device:
+        netbox_url: http://netbox.mgmt.toal.ca
+        netbox_token: "{{ lookup('env','NETBOX_TOKEN')}}"
+        data:
+          name: Test66
+          device_type: Cisco Test
+          device_role: Core Switch
+          site: Test Site
+          status: Staged
+          state: present
